@@ -22,11 +22,13 @@ class TopBar(tk.Frame):
         self.polygon_style = BarButton(self, image_name='', text='brush polygon', display_text=True)
 
         # For figures
-        self.fill_button = BarButton(self, image_name='palette.png', text='fill')
+        self.fill_button = BarButton(self, image_name='fill.png', text='fill')
+        self.fill_canvas = tk.Canvas(self, width=BUTTONS_PADDING * 10, height=TOPBAR_HEIGHT - 6 * BUTTONS_PADDING)
         self.outline_color_button = BarButton(self, text='outline color')
         self.triangle_button = BarButton(self, image_name='triangle.png', text='triangle')
         self.oval_button = BarButton(self, image_name='oval.png', text='circle')
         self.rectangle_button = BarButton(self, image_name='rectangle.png', text='rectangle')
+        self.polygon_button = BarButton(self, image_name='polygon.png', text='rectangle')
 
         # For brush, eraser, figures
         # self.width_button = BarButton(self, image_name='line-width.png', text='width')
@@ -36,9 +38,8 @@ class TopBar(tk.Frame):
         # For text
         self.font_family_button = BarButton(self, text='font family')
         self.font_color_button = BarButton(self, text='font color')
-        # self.font_size_button = BarButton(self, image_name='text-size.png', text='font size')
 
-    def change_state(self, tool: str, width_value: int = None, color_value: str = None) -> None:
+    def change_state(self, tool: str, width_value: int = 5, color_value: str = 'black') -> None:
         if tool == BRUSH:
             self._brush_state(width_value, color_value)
         elif tool == ERASER:
@@ -102,6 +103,7 @@ class TopBar(tk.Frame):
         self.triangle_button.pack_forget()
         self.oval_button.pack_forget()
         self.rectangle_button.pack_forget()
+        self.polygon_button.pack_forget()
 
     def _pack_figures_buttons(self):
         self.outline_color_button.custom_pack(location=tk.LEFT)
@@ -109,6 +111,7 @@ class TopBar(tk.Frame):
         self.triangle_button.custom_pack(location=tk.RIGHT)
         self.oval_button.custom_pack(location=tk.RIGHT)
         self.rectangle_button.custom_pack(location=tk.RIGHT)
+        self.polygon_button.custom_pack(location=tk.RIGHT)
 
     def _forget_text_buttons_pack(self):
         self.font_color_button.pack_forget()

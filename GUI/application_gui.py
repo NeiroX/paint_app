@@ -12,8 +12,6 @@ from GUI.sidebar_gui import SideBar
 from GUI.topbar_gui import TopBar
 
 
-# TODO: try to draw with polygon (use as additional brush style)
-# TODO: create parent class for brush paint
 # TODO: create figures
 # TODO: create magic selection
 # TODO: add font changing variations
@@ -58,10 +56,10 @@ class ApplicationGUI(tk.Tk):
         self.__canvas = tk.Canvas(self, bg=DEFAULT_CANVAS_COLOR, width=self.winfo_width(),
                                   height=self.winfo_height(), cursor="circle")
         self.__canvas.pack(fill=tk.BOTH, expand=True)
+        self.start_x, self.start_y = None, None
         self.__canvas.bind("<B1-Motion>", self._motion_dispatcher)
         self.__canvas.bind("<ButtonRelease-1>", self._reset)
         self.__canvas.bind("<Button-1>", self._click_dispatcher)
-        self.start_x, self.start_y = None, None
 
     def _setup_tools(self):
         # Brush defining
@@ -178,22 +176,27 @@ class ApplicationGUI(tk.Tk):
 
     def _motion_dispatcher(self, event: Any) -> None:
         if self.__current_tool == BRUSH:
-            if self.brush.get_brush_style() == BRUSH_DOT or (
-                    self.start_x is not None and self.start_y is not None and self.brush.get_brush_style() != BRUSH_DOT):
+            if self.brush.get_brush_style() == BRUSH_DOT:
                 self._paint(event.x, event.y)
-            self.start_x, self.start_y = event.x, event.y
+            elif self.start_x is not None and self.start_y is not None:
+                self._paint(event.x, event.y)
+                self.start_x = event.x
+                self.start_y = event.y
+            else:
+                self.start_x = event.x
+                self.start_y = event.y
         elif self.__current_tool == ERASER:
             self._erase(event.x, event.y)
             self.start_x, self.start_y = event.x, event.y
         else:
             if not self.start_x and not self.start_y:
                 self.start_x, self.start_y = event.x, event.y
-            if self.__current_tool == FIGURES:
-                self._create_figure(event.x, event.y)
+            elif self.__current_tool == FIGURES:
+                self._draw_figure(event.x, event.y)
             elif self.__current_tool == SELECT:
                 self._select(event.x, event.y)
 
-    def _create_figure(self, x: Any, y: Any):
+    def _draw_figure(self, x: Any, y: Any):
         pass
 
     def _paint(self, x: Any, y: Any):

@@ -1,4 +1,4 @@
-from painting_controller import PaintingController
-
+from GUI.application_gui import ApplicationGUI
 if __name__ == "__main__":
-    PaintingController().run()
+    gui = ApplicationGUI()
+    gui.run()

@@ -93,7 +93,8 @@ class Paint:
             self.id = canvas.create_polygon(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color,
                                             outline=self.__color, width=self.__width)
         elif self.__figure == BRUSH_LINE:
-            self.id = canvas.create_line(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color, width=self.__width)
+            self.id = canvas.create_line(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color,
+                                         width=self.__width)
 
 
 class TextArea:
