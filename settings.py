@@ -1,4 +1,3 @@
-import tkinter as tk
 import os
 
 # Sizes
@@ -24,12 +23,17 @@ REGULAR_COLOR = 'lightgray'
 # Path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ICONS_DIR = os.path.join(BASE_DIR, 'src/icon')
-print(ICONS_DIR)
 
 # Brush style
-BRUSH_DOT = 'dot'
-BRUSH_LINE = 'line'
-BRUSH_POLYGON = 'polygon'
+DEFAULT_BRUSH_SIZE = 5
+DEFAULT_BRUSH_COLOR = 'black'
+
+# Figures name
+LINE = 'line'
+POLYGON = 'polygon'
+RECTANGLE = 'rectangle'
+TRIANGLE = 'triangle'
+OVAL = 'oval'
 
 # Tools name
 BRUSH = 'brush'
@@ -39,8 +43,10 @@ SELECT = 'select'
 FIGURES = 'figures'
 
 # Text style
+FONT_FAMILIES = (
+    'Arial', 'Courier', 'Times', 'Helvetica', 'Symbol', 'Courier New', 'Times New Roman', 'Verdana', 'Comic Sans MS')
 DEFAULT_TEXT_COLOR = 'black'
-DEFAULT_TEXT_FONT = 'Helvetica'
+DEFAULT_TEXT_FONT = FONT_FAMILIES[0]
 DEFAULT_TEXT_SIZE = 12
 DEFAULT_FONT = (DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE)
 

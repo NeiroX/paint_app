@@ -42,7 +42,7 @@ class BarButton(tk.Button):
         # Setting action when button is pressed
         self['command'] = self._command
         # If there is an image name then we set icon within button.
-        # Otherwise, it's color button and its background might be changed
+        # Otherwise, it's outline_color button and its background might be changed
         if self._image:
             self['image'] = self._image
         else:
@@ -80,11 +80,11 @@ class BarButton(tk.Button):
         self._command = new_command
         self._setup_button()
 
-    def disable(self) -> None:
-        self.configure(state='disabled')
-
-    def enable(self) -> None:
-        self.configure(state='normal')
+    def is_enabled(self, status: bool):
+        if status:
+            self.configure(state='normal')
+        else:
+            self.configure(state='disabled')
 
     def custom_pack(self, location: str = tk.TOP) -> None:
         """

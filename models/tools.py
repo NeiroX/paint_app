@@ -1,5 +1,6 @@
 import tkinter as tk
-from settings import BRUSH_DOT, DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE, DEFAULT_TEXT_COLOR
+from settings import DEFAULT_BRUSH_SIZE, DEFAULT_BRUSH_COLOR, DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE, DEFAULT_TEXT_COLOR, \
+    LINE
 from typing import Any, Tuple
 from tkinter import simpledialog
 
@@ -23,15 +24,8 @@ class BasicTool:
 
 
 class Brush(BasicTool):
-    def __init__(self, width: int, color: str = 'black'):
+    def __init__(self, width: int = DEFAULT_BRUSH_SIZE, color: str = DEFAULT_TEXT_COLOR):
         super().__init__(width, color)
-        self.__brush_style = BRUSH_DOT
-
-    def change_brush_style(self, new_style: str):
-        self.__brush_style = new_style
-
-    def get_brush_style(self) -> str:
-        return self.__brush_style
 
 
 class Eraser(BasicTool):
@@ -42,8 +36,9 @@ class Eraser(BasicTool):
     def change_eraser_work(self, remove_object: bool) -> None:
         self._remove_object = remove_object
 
-    def get_eraser_work(self) -> bool:
+    def is_remove_object(self) -> bool:
         return self._remove_object
+
 
 class Texting:
     def __init__(self, font_family: str = DEFAULT_TEXT_FONT, font_size: int = DEFAULT_TEXT_SIZE,
@@ -69,3 +64,36 @@ class Texting:
 
     def change_font_color(self, new_font_color: str) -> None:
         self.__font_color = new_font_color
+
+
+class FigureDrawing:
+    def __init__(self, fill_color: str = 'black', outline_color: str = 'black', outline_width: int = 5,
+                 current_figure: str = LINE):
+        self.__fill_color = fill_color
+        self.__outline_color = outline_color
+        self.__outline_width = outline_width
+        self.__current_figure = current_figure
+
+    def change_fill_color(self, new_color: str) -> None:
+        self.__fill_color = new_color
+
+    def change_outline_color(self, new_color: str) -> None:
+        self.__outline_color = new_color
+
+    def change_outline_width(self, new_width: int) -> None:
+        self.__outline_width = new_width
+
+    def change_figure(self, new_figure: str) -> None:
+        self.__current_figure = new_figure
+
+    def get_current_figure(self) -> str:
+        return self.__current_figure
+
+    def get_outline_color(self) -> str:
+        return self.__outline_color
+
+    def get_outline_width(self) -> int:
+        return self.__outline_width
+
+    def get_fill_color(self) -> str:
+        return self.__fill_color
