@@ -1,30 +1,42 @@
 import tkinter as tk
-from typing import List, Any, Tuple
+from typing import List, Any, Tuple, Union, Optional
 from tkinter import simpledialog
-from settings import DEFAULT_TEXT_SIZE, DEFAULT_FONT, DEFAULT_TEXT_FONT, DEFAULT_TEXT_COLOR
+from settings import DEFAULT_TEXT_SIZE, DEFAULT_FONT, DEFAULT_TEXT_FONT, DEFAULT_TEXT_COLOR, BRUSH_DOT, BRUSH_POLYGON, \
+    BRUSH_LINE
 
 
-class Dot:
-    """
-    Class for drawing dot when brush is being used
-    """
-
-    def __init__(self, coords: Tuple[Any, Any], width: float, color: str):
+class Paint:
+    def __init__(self, coords: Union[Tuple[Any, Any], Tuple[Any, Any, Any, Any]], width: int, color: str,
+                 brush_style: str = BRUSH_DOT) -> None:
         """
-        Initializes Dot parameters such as width and color, id on canvas and coordinates in format (x,y)
-        :param coords: tuple of (x, y) coordinates
+        Initializes Paint parameters such as width and color, id on canvas and coordinates in format (x1, y1, x2, y2)
+        :param coords: tuple of (x, y) or (x1, y1, x2, y2) coordinates
         :param width: width of the brush tool
         :param color: color of the brush tool
+        :param brush_style: __figure to draw
         """
-        self.__x = coords[0]
-        self.__y = coords[1]
+        self.__x1, self.__y1, self.__x2, self.__y2 = 0, 0, 0, 0
         self.__width = width
+        self._set_coords(coords)
         self.__color = color
         self.id = None
+        self.__figure = brush_style
+
+    def _set_coords(self, coords: Union[Tuple[Any, Any], Tuple[Any, Any, Any, Any]]) -> None:
+        if len(coords) == 2:
+            self.__x1 = coords[0] - self.__width
+            self.__y1 = coords[1] - self.__width
+            self.__x2 = coords[0] + self.__width
+            self.__y2 = coords[1] + self.__width
+        else:
+            self.__x1 = coords[0]
+            self.__y1 = coords[1]
+            self.__x2 = coords[2]
+            self.__y2 = coords[3]
 
     def get_color(self) -> str:
         """
-        Returns the color of the dot
+        Returns the color of the painted
         :return:
         """
         return self.__color
@@ -32,43 +44,31 @@ class Dot:
     def change_color(self, new_color: str, canvas: tk.Canvas) -> None:
         """
         Changing the color of the dot accordingly to the new color
-        :param new_color: a new color of the dot
-        :param canvas: the canvas that the dot belongs to
+        :param new_color: a new color of the paint
+        :param canvas: the canvas that the paint belongs to
         :return: None
         """
         self.__color = new_color
-        self._update_dot(canvas)
+        self._update_paint(canvas)
 
     def get_width(self) -> float:
         """
-        Returns the width of the dot
-        :return: the width of the dot
+        Returns the width of the painted
+        :return: the width of the painted
         """
         return self.__width
 
-    def move(self, new_x: Any, new_y: Any, canvas: tk.Canvas) -> None:
+    def move(self, new_coords: Union[Tuple[Any, Any], Tuple[Any, Any, Any, Any]], canvas: tk.Canvas) -> None:
         """
         Moves the dot to the given position
-        :param new_x: new x position of the dot
-        :param new_y: new y position of the dot
+        :param new_coords: new coordinates of the painted
         :param canvas: the canvas that the dot belongs to
         :return: None
         """
-        self.__x = new_x
-        self.__y = new_y
-        self._update_dot(canvas)
+        self._set_coords(new_coords)
+        self._update_paint(canvas)
 
-    def change_width(self, new_width: float, canvas: tk.Canvas) -> None:
-        """
-        Changes the width of the dot accordingly to the new width
-        :param new_width: a new width of the dot
-        :param canvas: the canvas that the dot belongs to
-        :return: None
-        """
-        self.__width = new_width
-        self._update_dot(canvas)
-
-    def _update_dot(self, canvas: tk.Canvas) -> None:
+    def _update_paint(self, canvas: tk.Canvas) -> None:
         """
         Function that updates the dot on the canvas
         :param canvas:  that the dot belongs to
@@ -80,17 +80,20 @@ class Dot:
         except IOError:
             print('Dot does not appear on canvas or canvas is not provided. There is nothing to change')
 
-    def add_to_canvas(self, canvas):
+    def add_to_canvas(self, canvas: tk.Canvas) -> None:
         """
         Adds the dot to the canvas basing on coordinates
         :param canvas:
         :return:
         """
-        x1 = self.__x - self.__width
-        y1 = self.__y - self.__width
-        x2 = self.__x + self.__width
-        y2 = self.__y + self.__width
-        self.id = canvas.create_oval(x1, y1, x2, y2, fill=self.__color, outline=self.__color)
+        if self.__figure == BRUSH_DOT:
+            self.id = canvas.create_oval(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color,
+                                         outline=self.__color, width=self.__width)
+        elif self.__figure == BRUSH_POLYGON:
+            self.id = canvas.create_polygon(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color,
+                                            outline=self.__color, width=self.__width)
+        elif self.__figure == BRUSH_LINE:
+            self.id = canvas.create_line(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color, width=self.__width)
 
 
 class TextArea:
@@ -167,18 +170,30 @@ class FillFigure:
 
 class Painted:
     def __init__(self):
-        self.__dots = list()
+        self.__paints = list()
 
-    def add_dot(self, dot: Dot) -> None:
-        self.__dots.append(dot)
+    def add_paint(self, paint: Paint) -> None:
+        self.__paints.append(paint)
+
+    def remove_paint(self, id_number: int) -> bool:
+        for paint in self.__paints:
+            if paint.id == id_number:
+                self.__paints.remove(paint)
+                return True
+        return False
+
+    def get_paint(self, id_number: int) -> Optional[Paint]:
+        for paint in self.__paints:
+            if paint.id == id_number:
+                return paint
 
     def delete_from_canvas(self, canvas: tk.Canvas) -> None:
-        for dot in self.__dots:
-            canvas.delete(dot.id)
+        for paint in self.__paints:
+            canvas.delete(paint.id)
 
     def add_to_canvas(self, canvas: tk.Canvas) -> None:
-        for dot in self.__dots:
-            dot.add_to_canvas(canvas)
+        for paint in self.__paints:
+            paint.add_to_canvas(canvas)
 
 
 class Line(Outline):

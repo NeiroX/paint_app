@@ -2,7 +2,7 @@ import tkinter as tk
 from GUI.application_gui import ApplicationGUI
 from settings import *
 from models.tools import Brush, Eraser, Texting
-from models.drawing_classes import Painted, Dot, TextArea
+from models.drawing_classes import Painted, Paint, TextArea
 
 
 class PaintingController:

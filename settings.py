@@ -7,6 +7,7 @@ DEFAULT_SCREEN_HEIGHT = 720
 CANVAS_WIDTH = 900
 CANVAS_HEIGHT = 600
 SIDEBAR_WIDTH = 150
+TOPBAR_HEIGHT = 80
 
 # Padding
 DEFAULT_CANVAS_PADDING = 100
@@ -28,6 +29,7 @@ print(ICONS_DIR)
 # Brush style
 BRUSH_DOT = 'dot'
 BRUSH_LINE = 'line'
+BRUSH_POLYGON = 'polygon'
 
 # Tools name
 BRUSH = 'brush'
@@ -44,6 +46,6 @@ DEFAULT_FONT = (DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE)
 
 # Styles
 # SIDE_BUTTON_STYLE = ttk.Style()
-# SIDE_BUTTON_STYLE.configure('SideBarButton.TButton', borderwidth=0, relief='flat', background='#7f7f7f',
+# SIDE_BUTTON_STYLE.configure('BarButton.TButton', borderwidth=0, relief='flat', background='#7f7f7f',
 #                             foreground='white',
 #                             padding=10, font=('Helvetica', 12))
