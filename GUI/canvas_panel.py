@@ -1,6 +1,8 @@
 import tkinter as tk
 from models.changes import BackgroundChange
 from settings import *
+from PIL import Image
+import time
 
 
 class CanvasPanel(tk.Canvas):
@@ -44,3 +46,20 @@ class CanvasPanel(tk.Canvas):
         :return: None
         """
         self.pack(fill=tk.BOTH, expand=True)
+
+    def save(self) -> None:
+        """
+        Function that saves the canvas to image
+        :return: None
+        """
+        try:
+            image_file_name = 'result'
+            path_to_save = os.path.join(BASE_DIR, image_file_name)
+            self.postscript(file=path_to_save + '.ps', colormode='color')
+            time.sleep(5)
+            psimage = Image.open(path_to_save + '.ps')
+            psimage.save(path_to_save + '.jpg')
+            print('Image saved to ' + path_to_save)
+        except OSError as e:
+            print("Can't save image. Next error is raised:\n", e)
+

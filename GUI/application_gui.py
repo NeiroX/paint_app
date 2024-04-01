@@ -94,7 +94,7 @@ class ApplicationGUI(tk.Tk):
         self.__sidebar.figures_button.set_command(self._create_figure)
         self.__sidebar.background_button.set_command(self._canvas_manager.change_background_color)
         self.__sidebar.clear_button.set_command(self._clear_all)
-        self.__sidebar.save_button.set_command(self._canvas_manager.save)
+        self.__sidebar.save_button.set_command(self._canvas_manager.save_as_image)
         self.__sidebar.select_button.set_command(self._use_select)
         self.__sidebar.undo_button.set_command(self._undo)
         self.__sidebar.redo_button.set_command(self._redo)

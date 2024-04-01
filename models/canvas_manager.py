@@ -569,15 +569,13 @@ class CanvasManager:
         self.__canvas_objects.clear()
         self.__canvas.reset_background_color()
 
-    def save(self) -> None:
+    def save_as_image(self) -> None:
         """
         Function that saves current canvas to image file
         :return: None
         """
         self.end_drawing_polygon()
-        image_file_name = 'result.jpeg'
-        path_to_save = os.path.join(BASE_DIR, image_file_name)
-        self.__canvas.postscript(file=path_to_save, colormode='color')
+        self.__canvas.save()
 
     def change_background_color(self) -> None:
         """
