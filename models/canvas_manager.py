@@ -472,6 +472,15 @@ class CanvasManager:
         self.__figure_creating.change_outline_color(color)
         self.end_drawing_polygon()
 
+    def set_outline_width(self, width: int) -> None:
+        """
+        Function that sets the width of the outline for figure creating tool
+        :param width: a width of outline from type int
+        :return: None
+        """
+        self.__figure_creating.change_outline_width(width)
+        self.end_drawing_polygon()
+
     def set_font_size(self, size: int) -> None:
         """
         Function that sets the font size for text writing tool

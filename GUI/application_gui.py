@@ -236,6 +236,8 @@ class ApplicationGUI(tk.Tk):
             self._canvas_manager.set_eraser_width(new_width)
         elif self.__current_tool == TEXT:
             self._canvas_manager.set_font_size(new_width)
+        elif self.__current_tool == FIGURES:
+            self._canvas_manager.set_outline_width(new_width)
         elif self.__current_tool == SELECT:
             self._canvas_manager.change_selected_width(new_width)
 

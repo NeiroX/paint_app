@@ -197,6 +197,8 @@ class PaintGroup:
         :return: None
         """
         for paint in self.__paints:
+            if paint.id is None:
+                paint.add_to_canvas(canvas)
             canvas.tag_raise(paint.id)
 
     def send_backward(self, canvas: tk.Canvas) -> None:
@@ -206,6 +208,8 @@ class PaintGroup:
         :return: None
         """
         for paint in self.__paints:
+            if paint.id is None:
+                paint.add_to_canvas(canvas)
             canvas.tag_lower(paint.id)
 
     def remove_paint(self, id_number: int) -> bool:
