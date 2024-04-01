@@ -117,11 +117,23 @@ class CanvasManager:
             self.__canvas.delete(item)
 
     def draw_polygon(self, x: Any, y: Any) -> None:
+        """
+        Updates polygon while user's drawing
+        :param x: event x position
+        :param y: event y position
+        :return: None
+        """
         if self.__current_tool == FIGURES and self.__figure_creating.get_current_figure() == POLYGON:
             if self.__current_figure is not None:
                 self.__current_figure.add_vertex(x, y, self.__canvas, replace_old=True)
 
     def add_vertex_to_polygon(self, x: Any, y: Any) -> None:
+        """
+        Adds a new vertex information to the polygon verteces list
+        :param x: event x position
+        :param y: event y position
+        :return: None
+        """
         if self.__current_tool == FIGURES and self.__figure_creating.get_current_figure() == POLYGON:
             if self.__current_figure is not None:
                 self.__current_figure.add_vertex(x, y, self.__canvas, replace_old=True)
@@ -134,6 +146,10 @@ class CanvasManager:
                                                figure_name=self.__figure_creating.get_current_figure())
 
     def end_drawing_polygon(self) -> None:
+        """
+        Function that saves polygon and ends its drawing after RMB click
+        :return:
+        """
         if self.__current_figure is not None and self.__current_figure.get_figure_name() == POLYGON:
             self.__current_figure.delete_last_vertex(self.__canvas)
             self.__undo_stack.append(self.__current_figure)
@@ -202,10 +218,6 @@ class CanvasManager:
             else:
                 self.__current_figure.add_vertex(x, y, self.__canvas)
 
-        # elif self.__current_tool == SELECT:
-        #     self.__canvas_objects.append(self.__selected_object)
-        #     self.__undo_stack.append(self.__selected_object)
-
     def add_text(self, x: Any, y: Any) -> None:
         """
         Function that adds text to the canvas in chosen position.
@@ -225,12 +237,20 @@ class CanvasManager:
         self.__undo_stack.append(new_text)
 
     def _make_copy_of_selected(self):
+        """
+        Function that makes a copy of the selected object and adds changes on selected object to undo stack
+        :return: None
+        """
         old_copy = self.__selected_object
         self.__selected_object = old_copy.copy()
         self._delete_object_from_canvas(old_copy)
         self.__undo_stack.append(SelectedChange(old_copy, self.__selected_object))
 
     def edit_selected_text(self) -> Optional[bool]:
+        """
+        Function that calls text editing for the selected text object
+        :return: boolean result of text editing
+        """
         if self.__current_tool == SELECT:
             if self.__selected_object is not None:
                 self._make_copy_of_selected()
@@ -238,6 +258,10 @@ class CanvasManager:
                 return True
 
     def remove_fill_color(self) -> Optional[bool]:
+        """
+        Function that removes the fill color of the selected figure
+        :return: boolean result of removing fill color
+        """
         if self.__current_tool == SELECT:
             if self.__selected_object is not None:
                 self._make_copy_of_selected()

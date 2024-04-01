@@ -103,9 +103,169 @@ class Paint:
                                      outline=self.__color, width=self.__width)
 
 
+class PaintGroup:
+    """
+    Class that represents one brush use, in other words a group of painted dots until first LMB release
+    """
+
+    def __init__(self, id_number: int, paints: List[Paint] = None) -> None:
+        """
+        Initializes the group of painted dots
+        :param id_number: id of painted dots group
+        :param paints: optional parameter representing the painted dots list
+        """
+        self.__paints = list() if paints is None else paints
+        self.id = id_number
+
+    def __contains__(self, id_number: int) -> bool:
+        """
+        Checks if the painted dot with the given id is within this group
+        :param id_number: id number of painted dot
+        :return: result whether painted dot is within this group
+        """
+        return id_number in list(map(lambda x: x.id, self.__paints))
+
+    def copy(self) -> 'PaintGroup':
+        """
+        Creates a copy of the current group
+        :return: new group of painted dots
+        """
+        new_paints = list()
+        for p in self.__paints:
+            new_paints.append(p.copy())
+        return PaintGroup(self.id, new_paints)
+
+    def add_paint(self, paint: Paint) -> None:
+        """
+        Adds a painted dot to the group
+        :param paint: painted dot from type Paint
+        :return: None
+        """
+        self.__paints.append(paint)
+
+    def move(self, x_delta: Union[float, int], y_delta: Union[float, int], canvas: tk.Canvas) -> None:
+        """
+        Moves all painted dots in group
+        :param x_delta: change X axis direction
+        :param y_delta: change Y axis direction
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            paint.move(x_delta, y_delta, canvas=canvas)
+
+    def bring_forward(self, canvas: tk.Canvas) -> None:
+        """
+        Brings all painted dots of group forward on canvas
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            canvas.tag_raise(paint.id)
+
+    def send_backward(self, canvas: tk.Canvas) -> None:
+        """
+        Sends all painted dots of group backward on canvas
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            canvas.tag_lower(paint.id)
+
+    def remove_paint(self, id_number: int) -> bool:
+        """
+        Removes a painted dot from group
+        :param id_number: id number of dot to remove
+        :return: result whether dot was removed or not
+        """
+        for paint in self.__paints:
+            if paint.id == id_number:
+                self.__paints.remove(paint)
+                return True
+        return False
+
+    def change_color(self, new_color: str, canvas: tk.Canvas) -> None:
+        """
+        Changes the color of the all painted dots in group
+        :param new_color: new color of dot
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            paint.change_color(new_color, canvas)
+
+    def change_width(self, new_width: int, canvas: tk.Canvas) -> None:
+        """
+        Changes the width of the all painted dots in group
+        :param new_width: new width of dot
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            paint.change_width(new_width, canvas)
+
+    def get_paint(self, id_number: int) -> Optional[Paint]:
+        """
+        Returns the painted dot object if it exists, otherwise None
+        :param id_number: id number of dot
+        :return: a painted dot object if it exists, otherwise None
+        """
+        for paint in self.__paints:
+            if paint.id == id_number:
+                return paint
+
+    def delete_from_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Deletes the group of painted dots from the canvas
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            canvas.delete(paint.id)
+
+    def add_to_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Adds the group of painted dots to the canvas
+        :param canvas: a canvas which contains the painted dots of group
+        :return: None
+        """
+        for paint in self.__paints:
+            paint.add_to_canvas(canvas)
+
+    def get_color(self) -> str:
+        """
+        Returns the color of the painted dots
+        :return: color of the painted dots from type string
+        """
+        if self.__paints:
+            return self.__paints[0].get_color()
+        return DEFAULT_BRUSH_COLOR
+
+    def get_width(self) -> int:
+        """
+        Returns the width of the painted dots
+        :return: returns the width of the painted dots from type int
+        """
+        if self.__paints:
+            return self.__paints[0].get_width()
+        return DEFAULT_BRUSH_SIZE
+
+
 class TextArea:
+    """
+    Class representing a text area on the canvas
+    """
     def __init__(self, font_family: str, font_color: str, font_size: int, x: float = 20, y: float = 20,
                  text: str = 'Add text') -> None:
+        """
+        Initializes the text area with the given parameters
+        :param font_family: font family of text on canvas
+        :param font_color: text color on canvas
+        :param font_size: font size
+        :param x: x position of the object
+        :param y: y position of the object
+        :param text: a text to display on the canvas
+        """
         self.__x = x
         self.__y = y
         self.__font_family = font_family
@@ -115,10 +275,19 @@ class TextArea:
         self.id = None
 
     def copy(self) -> 'TextArea':
+        """
+        Returns a copy of the current text object
+        :return: a copy of the object
+        """
 
         return TextArea(self.__font_family, self.__font_color, self.__font_size, self.__x, self.__y, self.__text)
 
     def _update_text(self, canvas: tk.Canvas) -> None:
+        """
+        Updates the text on the canvas
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         try:
             if self.id is not None:
                 canvas.delete(self.id)
@@ -127,140 +296,174 @@ class TextArea:
             print('Text does not appear on canvas or canvas is not provided. There is nothing to change')
 
     def add_to_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Adds the text object to the canvas
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.id = canvas.create_text(self.__x, self.__y, text=self.__text, font=(self.__font_family, self.__font_size),
                                      fill=self.__font_color)
 
     def move(self, delta_x: float, delta_y: float, canvas: tk.Canvas) -> None:
+        """
+        Moves the text object on canvas
+        :param delta_x: change X axis
+        :param delta_y: change Y axis
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.__x += delta_x
         self.__y += delta_y
         self._update_text(canvas)
 
     def change_text(self, canvas: tk.Canvas) -> None:
+        """
+        Calls dialog window to change the text of text object
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.__text = simpledialog.askstring('Add text', "Enter text:", initialvalue=self.__text)
         self._update_text(canvas)
 
     def change_font_family(self, new_font_family: str, canvas: tk.Canvas) -> None:
+        """
+        Changes the font family of the text object on canvas
+        :param new_font_family: name of the new font family from type string
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.__font_family = new_font_family
         self._update_text(canvas)
 
     def change_font_color(self, new_font_color: str, canvas: tk.Canvas) -> None:
+        """
+        Changes the font color of the text object on canvas
+        :param new_font_color: a new font color from type string
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.__font_color = new_font_color
         self._update_text(canvas)
 
     def change_font_size(self, new_font_size: int, canvas: tk.Canvas) -> None:
+        """
+        Changes the font size of the text object on canvas
+        :param new_font_size: a new font size from type int
+        :param canvas: a canvas which contains the text object
+        :return: None
+        """
         self.__font_size = new_font_size
         self._update_text(canvas)
 
     def get_font_size(self) -> int:
+        """
+        Returns current font size of the text object
+        :return: font size of the text object from type int
+        """
         return self.__font_size
 
     def get_font_family(self) -> str:
+        """
+        Returns current font family of the text object
+        :return: name of font family from type string
+        """
         return self.__font_family
 
     def get_font_color(self) -> str:
+        """
+        Returns current font color of the text object
+        :return: current font color from type string
+        """
         return self.__font_color
 
 
 class Outline:
+    """
+    Class representing the outline of figures
+    """
     def __init__(self, outline_color: str, width: int) -> None:
+        """
+        Initializes the outline of figures with the given parameters
+        :param outline_color: color of the outline
+        :param width: thickness of the outline
+        """
         self.__outline_color = outline_color
         self.__outline_width = width
 
     def change_outline_color(self, new_color) -> None:
+        """
+        Changes the outline color of figure
+        :param new_color: new color of the outline
+        :return: None
+        """
         self.__outline_color = new_color
 
     def change_outline_width(self, new_width: float) -> None:
+        """
+        Changes the outline width of figure
+        :param new_width: new width of the outline
+        :return: None
+        """
         self.__outline_width = new_width
 
     def get_outline_color(self) -> str:
+        """
+        Returns the color of the outline
+        :return: an outline color from type string
+        """
         return self.__outline_color
 
     def get_outline_width(self) -> int:
+        """
+        Returns the width of the outline
+        :return: a width of the outline
+        """
         return self.__outline_width
 
 
 class FillFigure:
+    """
+    Class representing the fill of figures
+    """
     def __init__(self, fill_color: str = 'black') -> None:
+        """
+        Initializes the fill of figures with the given parameters
+        :param fill_color: color of fill
+        :return: None
+        """
         self.__fill_color = fill_color
 
     def get_fill_color(self) -> str:
+        """
+        Returns the color of the fill
+        :return: color of the fill from type string
+        """
         return self.__fill_color
 
     def change_fill_color(self, new_color: str = 'black') -> None:
+        """
+        Changes the color of the figure fill
+        :param new_color: new color of the fill from type string
+        :return: None
+        """
         self.__fill_color = new_color
 
 
-class PaintGroup:
-    def __init__(self, id_number: int, paints: List[Paint] = None) -> None:
-        self.__paints = list() if paints is None else paints
-        self.id = id_number
-
-    def __contains__(self, id_number: int) -> bool:
-        return id_number in list(map(lambda x: x.id, self.__paints))
-
-    def copy(self) -> 'PaintGroup':
-        new_paints = list()
-        for p in self.__paints:
-            new_paints.append(p.copy())
-        return PaintGroup(self.id, new_paints)
-
-    def add_paint(self, paint: Paint) -> None:
-        self.__paints.append(paint)
-
-    def move(self, x_delta: Union[float, int], y_delta: Union[float, int], canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            paint.move(x_delta, y_delta, canvas=canvas)
-
-    def bring_forward(self, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            canvas.tag_raise(paint.id)
-
-    def send_backward(self, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            canvas.tag_lower(paint.id)
-
-    def remove_paint(self, id_number: int) -> bool:
-        for paint in self.__paints:
-            if paint.id == id_number:
-                self.__paints.remove(paint)
-                return True
-        return False
-
-    def change_color(self, new_color: str, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            paint.change_color(new_color, canvas)
-
-    def change_width(self, new_width: int, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            paint.change_width(new_width, canvas)
-
-    def get_paint(self, id_number: int) -> Optional[Paint]:
-        for paint in self.__paints:
-            if paint.id == id_number:
-                return paint
-
-    def delete_from_canvas(self, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            canvas.delete(paint.id)
-
-    def add_to_canvas(self, canvas: tk.Canvas) -> None:
-        for paint in self.__paints:
-            paint.add_to_canvas(canvas)
-
-    def get_color(self) -> str:
-        if self.__paints:
-            return self.__paints[0].get_color()
-        return DEFAULT_BRUSH_COLOR
-
-    def get_width(self) -> int:
-        if self.__paints:
-            return self.__paints[0].get_width()
-        return DEFAULT_BRUSH_SIZE
-
-
 class Line(Outline):
+    """
+    Class representing the line figure on the canvas. It inherits from Outline and doesn't have filling
+    """
     def __init__(self, outline_color: str = 'black', outline_width: float = 5.0, start_x: Any = 20,
                  start_y: Any = 20, end_x: Any = None, end_y: Any = None) -> None:
+        """
+        Initializes the line figure on the canvas
+        :param outline_color: outline color of the line
+        :param outline_width: outline thickness of the line
+        :param start_x: starting x position of the line
+        :param start_y: starting y position of the line
+        :param end_x: ending x position of the line (optional parameter)
+        :param end_y: ending y position of the line (optional parameter)
+        """
         super().__init__(outline_color, outline_width)
         self.id = None
         self.__start_x, self.__start_y = start_x, start_y
@@ -270,15 +473,31 @@ class Line(Outline):
             self.__end_x, self.__end_y = start_x, start_y
 
     def copy(self) -> 'Line':
+        """
+        Creates a copy of the line figure object
+        :return: copy object
+        """
         return Line(self.get_outline_color(), self.get_outline_width(), self.__start_x, self.__start_y, self.__end_x,
                     self.__end_y)
 
     def add_to_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Adds the line to the canvas
+        :param canvas: a canvas which contains the line object
+        :return: None
+        """
         self.id = canvas.create_line(self.__start_x, self.__start_y, self.__end_x, self.__end_y,
                                      width=self.get_outline_width(),
                                      fill=self.get_outline_color())
 
     def move(self, delta_x: float, delta_y: float, canvas: tk.Canvas) -> None:
+        """
+        Moves the line on canvas
+        :param delta_x: change X axis
+        :param delta_y: change Y axis
+        :param canvas: a canvas which contains the line object
+        :return: None
+        """
         self.__start_x += delta_x
         self.__start_y += delta_y
         self.__end_x += delta_x
@@ -286,6 +505,11 @@ class Line(Outline):
         self.redraw(canvas=canvas)
 
     def delete_from_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Deletes the line from the canvas
+        :param canvas: a canvas which contains the line object
+        :return: None
+        """
         try:
             canvas.delete(self.id)
 
@@ -293,6 +517,13 @@ class Line(Outline):
             print("Object doesn't appear on canvas or canvas is not provided")
 
     def redraw(self, new_end_x: Any = None, new_end_y: Any = None, canvas: tk.Canvas = None) -> None:
+        """
+        Redraws the line on canvas with new coordinates if line is drawing
+        :param new_end_x: optional new end line x position
+        :param new_end_y: optional new end line y position
+        :param canvas: a canvas which contains the line object
+        :return: None
+        """
         if new_end_x is not None and new_end_y is not None:
             self.__end_x, self.__end_y = new_end_x, new_end_y
         self.delete_from_canvas(canvas=canvas)
@@ -300,9 +531,24 @@ class Line(Outline):
 
 
 class Figure(Outline, FillFigure):
+    """
+    Class representing a figure on the canvas. It inherits from Outline and FillFigure
+    """
     def __init__(self, fill_color: str = 'black', outline_color: str = 'black', outline_width: int = 5,
                  start_x: Any = 20, start_y: Any = 20, figure_name: str = RECTANGLE, end_x: Any = None,
                  end_y: Any = None, vertices_of_polygon: List[Any] = None) -> None:
+        """
+        Initializes the figure on the canvas with given parameters
+        :param fill_color: color of figure filling
+        :param outline_color: color of the figure outline
+        :param outline_width: width of the figure outline
+        :param start_x: start x position of the figure
+        :param start_y: start y position of the figure
+        :param figure_name: name of the figure to draw
+        :param end_x: optional end x position
+        :param end_y: optional end y position
+        :param vertices_of_polygon: optional list of vertices of the polygon
+        """
         Outline.__init__(self, outline_color, outline_width)
         FillFigure.__init__(self, fill_color)
         self.id = None
@@ -318,10 +564,19 @@ class Figure(Outline, FillFigure):
             self.__vertices_of_polygon = [start_x, start_y]
 
     def copy(self) -> 'Figure':
+        """
+        Returns a copy of the figure object
+        :return: copy object
+        """
         return Figure(self.get_fill_color(), self.get_outline_color(), self.get_outline_width(), self.__start_x,
                       self.__start_y, self.__name, self.__end_x, self.__end_y, self.__vertices_of_polygon.copy())
 
     def add_to_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Adds the figure to the canvas according to the figure name
+        :param canvas: a canvas which contains the figure object
+        :return: None
+        """
         if self.__name == RECTANGLE:
             self.id = canvas.create_rectangle(self.__start_x, self.__start_y, self.__end_x, self.__end_y,
                                               width=self.get_outline_width(),
@@ -342,6 +597,13 @@ class Figure(Outline, FillFigure):
                                             width=self.get_outline_width())
 
     def move(self, delta_x: float, delta_y: float, canvas: tk.Canvas) -> None:
+        """
+        Moves the figure on canvas
+        :param delta_x: change X axis position
+        :param delta_y: change Y axis position
+        :param canvas: a canvas which contains the figure object
+        :return: None
+        """
         if self.__name != POLYGON:
             self.__start_x += delta_x
             self.__start_y += delta_y
@@ -354,9 +616,21 @@ class Figure(Outline, FillFigure):
         self.redraw(canvas=canvas)
 
     def get_figure_name(self) -> str:
+        """
+        Returns the name of the figure
+        :return: name of the figure from type string
+        """
         return self.__name
 
     def add_vertex(self, vertex_x: float, vertex_y: float, canvas: tk.Canvas, replace_old: bool = False) -> None:
+        """
+        Adds a vertex to the polygon
+        :param vertex_x: vertex x position
+        :param vertex_y: vertex y position
+        :param canvas: a canvas which contains the figure object
+        :param replace_old: optional boolean parameter whether replace the previous vertex with a new one
+        :return: None
+        """
         if replace_old:
             self.__vertices_of_polygon[-1] = vertex_y
             self.__vertices_of_polygon[-2] = vertex_x
@@ -366,18 +640,35 @@ class Figure(Outline, FillFigure):
         self.redraw(canvas=canvas)
 
     def delete_last_vertex(self, canvas: tk.Canvas) -> None:
+        """
+        Deletes the last vertex of the polygon
+        :param canvas: a canvas which contains the figure object
+        :return: None
+        """
         if len(self.__vertices_of_polygon) > 2:
             del self.__vertices_of_polygon[-1]
             del self.__vertices_of_polygon[-1]
             self.redraw(canvas=canvas)
 
     def delete_from_canvas(self, canvas: tk.Canvas) -> None:
+        """
+        Deletes the figure from canvas
+        :param canvas: a canvas which contains the figure object
+        :return: None
+        """
         try:
             canvas.delete(self.id)
         except AttributeError:
             print("Object doesn't appear on canvas or canvas is not provided")
 
     def redraw(self, new_end_x: Any = None, new_end_y: Any = None, canvas: tk.Canvas = None) -> None:
+        """
+        Redraws the figure on canvas with new coordinates if figure is drawing
+        :param new_end_x: optional new end x position of the figure
+        :param new_end_y: optional new end y position of the figure
+        :param canvas: a canvas which contains the figure object
+        :return: None
+        """
         if new_end_x is not None and new_end_y is not None:
             self.__end_x, self.__end_y = new_end_x, new_end_y
         self.delete_from_canvas(canvas=canvas)

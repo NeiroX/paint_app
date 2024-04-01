@@ -239,6 +239,10 @@ class ApplicationGUI(tk.Tk):
             self.__sidebar.undo_button.is_enabled(True)
 
     def _edit_text(self) -> None:
+        """
+        Function that edits text for selected text object
+        :return: None
+        """
         if self.__current_tool == SELECT:
             result = self._canvas_manager.edit_selected_text()
             self._disable_redo_button()
@@ -246,6 +250,10 @@ class ApplicationGUI(tk.Tk):
                 self.__sidebar.undo_button.is_enabled(result)
 
     def _remove_fill(self) -> None:
+        """
+        Function that removes fill color for selected figure
+        :return: None
+        """
         if self.__current_tool == SELECT:
             result = self._canvas_manager.remove_fill_color()
             self._disable_redo_button()
@@ -262,10 +270,20 @@ class ApplicationGUI(tk.Tk):
         self.__sidebar.redo_button.is_enabled(False)
 
     def _motion_dispatcher(self, event: Any) -> None:
+        """
+        Dispatcher for mouse motion on canvas
+        :param event: event information
+        :return: None
+        """
         if self.__current_tool == FIGURES:
             self._canvas_manager.draw_polygon(event.x, event.y)
 
     def _second_mouse_button_dispatcher(self, event: Any) -> None:
+        """
+        Dispatcher for right mouse click
+        :param event: event information
+        :return: None
+        """
         if self.__current_tool == FIGURES:
             self._canvas_manager.end_drawing_polygon()
             self._disable_redo_button()
