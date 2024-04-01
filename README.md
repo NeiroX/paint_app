@@ -66,7 +66,6 @@ All GUI classes are wired up in ```class ApplicationGUI``` which inherits from `
 
 ### App logic
 
-Constants are placed in file:
->setting.py<
+Constants are placed in file _setting.py_
 Main logic is separated between models and in mostly found in ```class CanvasManager```.
 
