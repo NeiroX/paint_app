@@ -13,7 +13,7 @@ class CanvasManager:
     Manages the canvas objects and draws custom objects according to the chosen tool
     """
 
-    def __init__(self, canvas: CanvasPanel) -> None:
+    def __init__(self, canvas: CanvasPanel, project: Dict[str, Any] = None) -> None:
         """
         Initializes manager variables such as tools, stacks for redo and undo actions, empty canvas objects
         :param canvas: canvas to manage
@@ -35,6 +35,8 @@ class CanvasManager:
         self.__undo_stack = deque()
         self.__redo_stack = deque()
         self.start_x, self.start_y = None, None
+        if project is not None:
+            self._load_canvas_from_dict(project)
 
     def _setup_tools(self) -> None:
         """
@@ -576,6 +578,56 @@ class CanvasManager:
         """
         self.end_drawing_polygon()
         self.__canvas.save()
+
+    def save_canvas_to_dict(self) -> Dict[Any, Any]:
+        """
+        Function that saves current canvas to dictionary
+        :return: a dictionary which contains all objects on canvas
+        """
+        canvas_dict = dict()
+        canvas_dict['PaintGroup'] = list()
+        canvas_dict['Line'] = list()
+        canvas_dict['Figure'] = list()
+        canvas_dict['TextArea'] = list()
+        canvas_dict['canvas_color'] = self.__canvas.get_background_color()
+        for obj in self.__canvas_objects:
+            if type(obj) is PaintGroup:
+                canvas_dict['PaintGroup'].append(obj.save_settings_to_dict())
+            elif type(obj) is Figure:
+                canvas_dict['Figure'].append(obj.save_settings_to_dict())
+            elif type(obj) is Line:
+                canvas_dict['Line'].append(obj.save_settings_to_dict())
+            elif type(obj) is TextArea:
+                canvas_dict['TextArea'].append(obj.save_settings_to_dict())
+
+        return canvas_dict
+
+    def _load_canvas_from_dict(self, canvas_dict: Dict[Any, Any]) -> None:
+        """
+        Load canvas from given dictionary and update the variables
+        :param canvas_dict: canvas settings
+        :return: None
+        """
+        self.__canvas.change_background_color(canvas_dict['canvas_color'])
+        paint_groups = canvas_dict['PaintGroup']
+        for group in paint_groups:
+            self.__paint_group_id = group['id']
+            new_group = PaintGroup.load_from_dict(group)
+            self.__canvas_objects.append(new_group)
+            new_group.add_to_canvas(self.__canvas)
+        for line in canvas_dict['Line']:
+            new_line = Line.load_from_dict(line)
+            self.__canvas_objects.append(new_line)
+            new_line.add_to_canvas(self.__canvas)
+        for figure in canvas_dict['Figure']:
+            new_figure = Figure.load_from_dict(figure)
+            self.__canvas_objects.append(new_figure)
+            new_figure.add_to_canvas(self.__canvas)
+        for text in canvas_dict['TextArea']:
+            new_text = TextArea.load_from_dict(text)
+            self.__canvas_objects.append(new_text)
+            new_text.add_to_canvas(self.__canvas)
+        self.__canvas.update()
 
     def change_background_color(self) -> None:
         """

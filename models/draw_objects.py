@@ -1,5 +1,5 @@
 import tkinter as tk
-from typing import List, Any, Tuple, Union, Optional
+from typing import List, Any, Tuple, Union, Optional, Dict
 from tkinter import simpledialog
 from settings import DEFAULT_TEXT_SIZE, DEFAULT_FONT, DEFAULT_TEXT_FONT, DEFAULT_TEXT_COLOR, RECTANGLE, TRIANGLE, OVAL, \
     POLYGON, DEFAULT_BRUSH_COLOR, DEFAULT_BRUSH_SIZE
@@ -11,7 +11,7 @@ class Paint:
         Initializes Paint parameters such as width and outline_color, id on canvas and coordinates in format (x1, y1, x2, y2)
         :param coords: tuple of (x, y) coordinates
         :param width: width of the brush tool
-        :param color: outline_color of the brush tool
+        :param color: color of the brush tool
         """
         self.__x1, self.__y1, self.__x2, self.__y2 = 0, 0, 0, 0
         self.__width = width
@@ -21,6 +21,18 @@ class Paint:
 
     def copy(self) -> 'Paint':
         return Paint((self.__x1 + self.__width, self.__y1 + self.__width), self.__width, self.__color, self.id)
+
+    def save_settings_to_dict(self) -> Dict[str, Any]:
+        """
+        Save all the parameters of the painted dot object into a dictionary
+        :return: the dictionary with parameters
+        """
+        parameters = dict()
+        parameters['coords'] = (self.__x1 + self.__width, self.__y1 + self.__width)
+        parameters['width'] = self.__width
+        parameters['color'] = self.__color
+        parameters['id'] = self.id
+        return parameters
 
     def _set_coords(self, coords: Tuple[Any, Any]) -> None:
         """
@@ -102,6 +114,18 @@ class Paint:
         self.id = canvas.create_oval(self.__x1, self.__y1, self.__x2, self.__y2, fill=self.__color,
                                      outline=self.__color, width=self.__width)
 
+    @staticmethod
+    def load_from_dict(settings: Dict[str, Any]) -> 'Paint':
+        """
+        Loads the painted dot from a dictionary settings and returns Paint object
+        :param settings: dictionary with painted dot settings
+        :return: object from Paint class
+        """
+        coords = settings['coords']
+        width = settings['width']
+        color = settings['color']
+        return Paint(coords, width, color)
+
 
 class PaintGroup:
     """
@@ -134,6 +158,18 @@ class PaintGroup:
         for p in self.__paints:
             new_paints.append(p.copy())
         return PaintGroup(self.id, new_paints)
+
+    def save_settings_to_dict(self) -> Dict[str, Any]:
+        """
+        Save all the parameters of the painted group object into a dictionary
+        :return: the dictionary with parameters
+        """
+        parameters = dict()
+        parameters['paints'] = list()
+        for p in self.__paints:
+            parameters['paints'].append(p.save_settings_to_dict())
+        parameters['id'] = self.id
+        return parameters
 
     def add_paint(self, paint: Paint) -> None:
         """
@@ -250,11 +286,25 @@ class PaintGroup:
             return self.__paints[0].get_width()
         return DEFAULT_BRUSH_SIZE
 
+    @staticmethod
+    def load_from_dict(settings: Dict[str, Any]) -> 'PaintGroup':
+        """
+        Loads the group of painted dots from a dictionary settings and returns PaintGroup object
+        :param settings: dictionary with group of painted dots settings
+        :return: object from PaintGroup class
+        """
+        paints = list()
+        id_number = settings["id"]
+        for paint in settings['paints']:
+            paints.append(Paint.load_from_dict(paint))
+        return PaintGroup(id_number, paints)
+
 
 class TextArea:
     """
     Class representing a text area on the canvas
     """
+
     def __init__(self, font_family: str, font_color: str, font_size: int, x: float = 20, y: float = 20,
                  text: str = 'Add text') -> None:
         """
@@ -281,6 +331,20 @@ class TextArea:
         """
 
         return TextArea(self.__font_family, self.__font_color, self.__font_size, self.__x, self.__y, self.__text)
+
+    def save_settings_to_dict(self) -> Dict[str, Any]:
+        """
+        Save all the parameters of the text object into a dictionary
+        :return: the dictionary with parameters
+        """
+        parameters = dict()
+        parameters['font_family'] = self.__font_family
+        parameters['font_color'] = self.__font_color
+        parameters['font_size'] = self.__font_size
+        parameters['text'] = self.__text
+        parameters['x'] = self.__x
+        parameters['y'] = self.__y
+        return parameters
 
     def _update_text(self, canvas: tk.Canvas) -> None:
         """
@@ -376,11 +440,28 @@ class TextArea:
         """
         return self.__font_color
 
+    @staticmethod
+    def load_from_dict(settings: Dict[str, Any]) -> 'TextArea':
+        """
+        Loads the text from a dictionary settings and returns TextArea object
+        :param settings: dictionary with text settings
+        :return: object from TextArea class
+        """
+        font_family = settings['font_family']
+        font_color = settings['font_color']
+        font_size = settings['font_size']
+        text = settings['text']
+        x = settings['x']
+        y = settings['y']
+
+        return TextArea(font_family, font_color, font_size, x, y, text)
+
 
 class Outline:
     """
     Class representing the outline of figures
     """
+
     def __init__(self, outline_color: str, width: int) -> None:
         """
         Initializes the outline of figures with the given parameters
@@ -425,6 +506,7 @@ class FillFigure:
     """
     Class representing the fill of figures
     """
+
     def __init__(self, fill_color: str = 'black') -> None:
         """
         Initializes the fill of figures with the given parameters
@@ -453,6 +535,7 @@ class Line(Outline):
     """
     Class representing the line figure on the canvas. It inherits from Outline and doesn't have filling
     """
+
     def __init__(self, outline_color: str = 'black', outline_width: float = 5.0, start_x: Any = 20,
                  start_y: Any = 20, end_x: Any = None, end_y: Any = None) -> None:
         """
@@ -471,6 +554,20 @@ class Line(Outline):
             self.__end_x, self.__end_y = end_x, end_y
         else:
             self.__end_x, self.__end_y = start_x, start_y
+
+    def save_settings_to_dict(self) -> Dict[str, Any]:
+        """
+        Save all the parameters of the line object into a dictionary
+        :return: the dictionary with parameters
+        """
+        parameters = dict()
+        parameters['outline_color'] = self.get_outline_color()
+        parameters['outline_width'] = self.get_outline_width()
+        parameters['start_x'] = self.__start_x
+        parameters['start_y'] = self.__start_y
+        parameters['end_x'] = self.__end_x
+        parameters['end_y'] = self.__end_y
+        return parameters
 
     def copy(self) -> 'Line':
         """
@@ -529,11 +626,28 @@ class Line(Outline):
         self.delete_from_canvas(canvas=canvas)
         self.add_to_canvas(canvas=canvas)
 
+    @staticmethod
+    def load_from_dict(settings: dict) -> 'Line':
+        """
+        Loads the line from a dictionary settings and returns Line object
+        :param settings: dictionary with line settings
+        :return: object from Line class
+        """
+        outline_color = settings['outline_color']
+        outline_width = settings['outline_width']
+        start_x = settings['start_x']
+        start_y = settings['start_y']
+        end_x = settings['end_x']
+        end_y = settings['end_y']
+        return Line(outline_color=outline_color, outline_width=outline_width, start_x=start_x, start_y=start_y,
+                    end_x=end_x, end_y=end_y)
+
 
 class Figure(Outline, FillFigure):
     """
     Class representing a figure on the canvas. It inherits from Outline and FillFigure
     """
+
     def __init__(self, fill_color: str = 'black', outline_color: str = 'black', outline_width: int = 5,
                  start_x: Any = 20, start_y: Any = 20, figure_name: str = RECTANGLE, end_x: Any = None,
                  end_y: Any = None, vertices_of_polygon: List[Any] = None) -> None:
@@ -570,6 +684,23 @@ class Figure(Outline, FillFigure):
         """
         return Figure(self.get_fill_color(), self.get_outline_color(), self.get_outline_width(), self.__start_x,
                       self.__start_y, self.__name, self.__end_x, self.__end_y, self.__vertices_of_polygon.copy())
+
+    def save_settings_to_dict(self) -> Dict[str, Any]:
+        """
+        Save all the parameters of the figure object into a dictionary
+        :return: the dictionary with parameters
+        """
+        parameters = dict()
+        parameters['fill_color'] = self.get_fill_color()
+        parameters['outline_color'] = self.get_outline_color()
+        parameters['outline_width'] = self.get_outline_width()
+        parameters['start_x'] = self.__start_x
+        parameters['start_y'] = self.__start_y
+        parameters['figure_name'] = self.__name
+        parameters['end_x'] = self.__end_x
+        parameters['end_y'] = self.__end_y
+        parameters['vertices_of_polygon'] = self.__vertices_of_polygon
+        return parameters
 
     def add_to_canvas(self, canvas: tk.Canvas) -> None:
         """
@@ -673,3 +804,22 @@ class Figure(Outline, FillFigure):
             self.__end_x, self.__end_y = new_end_x, new_end_y
         self.delete_from_canvas(canvas=canvas)
         self.add_to_canvas(canvas=canvas)
+
+    @staticmethod
+    def load_from_dict(settings: dict) -> 'Figure':
+        """
+        Loads the figure from a dictionary settings and returns Figure object
+        :param settings: dictionary with figure settings
+        :return: object from Figure class
+        """
+        outline_color = settings['outline_color']
+        outline_width = settings['outline_width']
+        fill_color = settings['fill_color']
+        start_x = settings['start_x']
+        start_y = settings['start_y']
+        end_x = settings['end_x']
+        end_y = settings['end_y']
+        figure_name = settings['figure_name']
+        vertices_of_polygon = settings['vertices_of_polygon']
+        return Figure(fill_color, outline_color, outline_width, start_x, figure_name, start_y, end_x,
+                      vertices_of_polygon)

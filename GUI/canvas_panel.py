@@ -33,6 +33,13 @@ class CanvasPanel(tk.Canvas):
         self.__background_color = new_color
         return new_background_change
 
+    def get_background_color(self) -> str:
+        """
+        Function that returns the background color of the canvas
+        :return: background color of canvas from type string
+        """
+        return self.__background_color
+
     def reset_background_color(self) -> None:
         """
         Function that resets the background of the canvas
@@ -62,4 +69,3 @@ class CanvasPanel(tk.Canvas):
             print('Image saved to ' + path_to_save)
         except OSError as e:
             print("Can't save image. Next error is raised:\n", e)
-

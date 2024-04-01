@@ -4,6 +4,7 @@ import screeninfo
 from typing import Any
 
 from models.canvas_manager import CanvasManager
+from models.project import Project
 from settings import *
 from models.draw_objects import PaintGroup, TextArea, Line, Figure
 from GUI.sidebar_gui import SideBar
@@ -39,7 +40,8 @@ class ApplicationGUI(tk.Tk):
         self._canvas = CanvasPanel(self, background_color=DEFAULT_CANVAS_COLOR, width=self.winfo_width(),
                                    height=self.winfo_height())
         self._canvas.custom_pack()
-        self._canvas_manager = CanvasManager(canvas=self._canvas)
+        self._project = Project(PROJECT_FILE_NAME)
+        self._canvas_manager = CanvasManager(canvas=self._canvas, project=self._project.open())
         self._setup_binds()
 
         # Setting up commands for sidebar and topbar buttons
@@ -98,6 +100,7 @@ class ApplicationGUI(tk.Tk):
         self.__sidebar.select_button.set_command(self._use_select)
         self.__sidebar.undo_button.set_command(self._undo)
         self.__sidebar.redo_button.set_command(self._redo)
+        self.__sidebar.close_app_button.set_command(self._save_project)
         self.__topbar.color_button.set_command(self._change_outline_color)
         self.__topbar.width_slider.configure(command=self._change_tool_width)
         self.__topbar.line_button.set_command(self._canvas_manager.set_line_figure)
@@ -112,6 +115,16 @@ class ApplicationGUI(tk.Tk):
         self.__topbar.remove_button.set_command(self._canvas_manager.remove_object)
         self.__topbar.edit_text.set_command(self._edit_text)
         self.__topbar.remove_fill_button.set_command(self._remove_fill)
+
+    def _save_project(self) -> None:
+        """
+        Save the current project to json file and close app window
+        :return: None
+        """
+        saved_canvas = self._canvas_manager.save_canvas_to_dict()
+        self._project.save(saved_canvas)
+        # Clothing window
+        self.destroy()
 
     def _disable_redo_button(self) -> None:
         """

@@ -71,9 +71,9 @@ class SideBar(tk.Frame):
         self.save_button = BarButton(self, 'save.png', 'save')
         self.save_button.custom_pack(location=tk.BOTTOM)
 
-        # Color - button that opens outline_color palette for changing outline_color of brush or painted object
-        # self.color_button = BarButton(self, text='brush outline_color')
-        # self.color_button.custom_pack(location=tk.BOTTOM)
+        # Save and exit button which save project
+        self.close_app_button = BarButton(self, 'exit.png', 'save and close')
+        self.close_app_button.custom_pack(location=tk.BOTTOM)
 
     def custom_pack(self) -> None:
         """

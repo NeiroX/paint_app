@@ -22,7 +22,11 @@ REGULAR_COLOR = 'lightgray'
 
 # Path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.join(BASE_DIR, 'src/project')
 ICONS_DIR = os.path.join(BASE_DIR, 'src/icon')
+
+# Project
+PROJECT_FILE_NAME = 'saved_project.json'
 
 # Brush style
 DEFAULT_BRUSH_SIZE = 5
