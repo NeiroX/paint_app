@@ -1,8 +1,5 @@
-import tkinter as tk
-from settings import DEFAULT_BRUSH_SIZE, DEFAULT_BRUSH_COLOR, DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE, DEFAULT_TEXT_COLOR, \
-    LINE
-from typing import Any, Tuple
-from tkinter import simpledialog
+from settings import (DEFAULT_BRUSH_SIZE, DEFAULT_BRUSH_COLOR, DEFAULT_TEXT_FONT,
+                      DEFAULT_TEXT_SIZE, DEFAULT_TEXT_COLOR, LINE)
 
 
 class BasicTool:
@@ -24,20 +21,13 @@ class BasicTool:
 
 
 class Brush(BasicTool):
-    def __init__(self, width: int = DEFAULT_BRUSH_SIZE, color: str = DEFAULT_TEXT_COLOR):
+    def __init__(self, width: int = DEFAULT_BRUSH_SIZE, color: str = DEFAULT_BRUSH_COLOR):
         super().__init__(width, color)
 
 
 class Eraser(BasicTool):
-    def __init__(self, width: int, color: str = 'white', remove_object: bool = True) -> None:
+    def __init__(self, width: int, color: str = 'white') -> None:
         super().__init__(width, color)
-        self._remove_object = True
-
-    def change_eraser_work(self, remove_object: bool) -> None:
-        self._remove_object = remove_object
-
-    def is_remove_object(self) -> bool:
-        return self._remove_object
 
 
 class Texting:

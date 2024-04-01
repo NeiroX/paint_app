@@ -43,15 +43,9 @@ SELECT = 'select'
 FIGURES = 'figures'
 
 # Text style
-FONT_FAMILIES = (
-    'Arial', 'Courier', 'Times', 'Helvetica', 'Symbol', 'Courier New', 'Times New Roman', 'Verdana', 'Comic Sans MS')
+FONT_FAMILIES = [
+    'Arial', 'Courier', 'Times', 'Helvetica', 'Symbol', 'Courier New', 'Times New Roman', 'Verdana', 'Comic Sans MS']
 DEFAULT_TEXT_COLOR = 'black'
 DEFAULT_TEXT_FONT = FONT_FAMILIES[0]
 DEFAULT_TEXT_SIZE = 12
 DEFAULT_FONT = (DEFAULT_TEXT_FONT, DEFAULT_TEXT_SIZE)
-
-# Styles
-# SIDE_BUTTON_STYLE = ttk.Style()
-# SIDE_BUTTON_STYLE.configure('BarButton.TButton', borderwidth=0, relief='flat', background='#7f7f7f',
-#                             foreground='white',
-#                             padding=10, font=('Helvetica', 12))

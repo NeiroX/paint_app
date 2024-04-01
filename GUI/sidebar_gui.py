@@ -4,15 +4,15 @@ from GUI.bar_button import BarButton
 
 class SideBar(tk.Frame):
     """
-    Frame for sidebar widgets. It creates all buttons.
+    Frame for __sidebar widgets. It creates all buttons on left side.
     """
 
     def __init__(self, master: tk.Tk, bg_color: str, width: int) -> None:
         """
-        Initializes sidebar frame
-        :param master: root that contains the sidebar
-        :param bg_color: background outline_color of the sidebar
-        :param width: width of sidebar frame
+        Initializes __sidebar frame
+        :param master: root that contains the __sidebar
+        :param bg_color: background outline_color of the __sidebar
+        :param width: width of __sidebar frame
         """
         # Initializing tkinter.Frame with given parameters
         super().__init__(master, bg=bg_color, width=width)
@@ -21,8 +21,8 @@ class SideBar(tk.Frame):
 
     def _setup_sidebar_buttons(self) -> None:
         """
-        Function that sets up buttons for sidebar frame.
-        Buttons are placed in sidebar frame:
+        Function that sets up buttons for __sidebar frame.
+        Buttons are placed in __sidebar frame:
         :return: None
         """
         # TOP BUTTONS
@@ -47,8 +47,8 @@ class SideBar(tk.Frame):
         self.select_button.custom_pack(location=tk.TOP)
 
         # Trash - button that clears all canvas
-        self.trash_button = BarButton(self, 'clear.png', 'clear all')
-        self.trash_button.custom_pack(location=tk.TOP)
+        self.clear_button = BarButton(self, 'clear.png', 'clear all')
+        self.clear_button.custom_pack(location=tk.TOP)
 
         # Background – button that opens outline_color palette for changing background outline_color
         self.background_button = BarButton(self, 'background.png', 'background outline_color')
@@ -75,5 +75,9 @@ class SideBar(tk.Frame):
         # self.color_button = BarButton(self, text='brush outline_color')
         # self.color_button.custom_pack(location=tk.BOTTOM)
 
-    def custom_pack(self):
+    def custom_pack(self) -> None:
+        """
+        Custom pack of sidebar widget on window
+        :return: None
+        """
         self.pack(side=tk.LEFT, fill=tk.BOTH)
