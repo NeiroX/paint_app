@@ -27,7 +27,6 @@ class CanvasManager:
 
         # Setting up all tools
         self._setup_tools()
-        self.__old_object = None
 
         # List of all objects
         self.__canvas_objects = list()
@@ -246,6 +245,7 @@ class CanvasManager:
         old_copy = self.__selected_object
         self.__selected_object = old_copy.copy()
         self._delete_object_from_canvas(old_copy)
+        self.__canvas_objects.append(self.__selected_object)
         self.__undo_stack.append(SelectedChange(old_copy, self.__selected_object))
 
     def edit_selected_text(self) -> Optional[bool]:
@@ -498,9 +498,8 @@ class CanvasManager:
             self.__texting.change_font_family(family)
         elif self.__current_tool == SELECT:
             if self.__selected_object is not None:
-                old_object = self.__selected_object.copy()
+                self._make_copy_of_selected()
                 self.__selected_object.change_font_family(family, self.__canvas)
-                self.__undo_stack.append(SelectedChange(old_object, self.__selected_object))
 
     def get_texting_parameters(self) -> Dict[str, Union[str, int]]:
         """

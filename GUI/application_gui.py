@@ -197,7 +197,6 @@ class ApplicationGUI(tk.Tk):
             self.__topbar.update_color_canvas_color(new_color)
             if self.__current_tool == BRUSH:
                 self._canvas_manager.set_brush_color(new_color)
-                print('Brush outline_color changed')
             elif self.__current_tool == FIGURES:
                 self._canvas_manager.set_outline_color(new_color)
             elif self.__current_tool == TEXT:
@@ -388,7 +387,6 @@ class ApplicationGUI(tk.Tk):
         :return: None
         """
         selected_type = type(selected_object)
-        print(selected_type)
         if selected_type is TextArea:
             self.__topbar.change_state(TEXT,
                                        width_value=selected_object.get_font_size(),
